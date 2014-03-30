@@ -1,7 +1,7 @@
 Bobalong
 =======
 
-This repository contains all the code that is and will be on the autonomous sailing boat Bob A Long.
+This repository contains all the code that is and will be on the autonomous sailing boat Robert A Long.
 
 
 

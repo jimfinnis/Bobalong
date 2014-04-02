@@ -20,19 +20,57 @@
  class HMC6343 {
  public:
  	HMC6343();
+
+ 	//=====================================================================
+ 	/**
+ 	 * Determines if the compass is functioning correctly.
+ 	 */
  	bool IsFunctioning();
-	void GetBearing(float& heading, float& pitch, float& roll);
-	void GetAcceleration(float& accX, float& accY, float& accZ);
+
+ 	//=====================================================================
+ 	/**
+ 	 * Returns the bearing in heading, pitch and roll
+ 	 */
+	void GetBearing(int& heading, int& pitch, int& roll);
+
+	//=====================================================================
+	/**
+	 * Returns the acceleration in 3 values, accX, accY and acc,Z
+	 */
+	void GetAcceleration(int& accX, int& accY, int& accZ);
  private:
- 	bool ReadCompass(byte register, float& v0, float& v1, float& v2 );
- 	float ReadValue();
- 	float CombineByte(byte high, byte low);
+ 	//=====================================================================
+ 	/**
+ 	 * Tries to read a particular register from the compass and inserts the values into
+ 	 * 3 ints which are passed by reference.
+ 	 * 
+ 	 * @param  	register Register to access
+ 	 * @return 	Returns true if the method was able to successfully read compass
+ 	 *                          data.	
+ 	 */
+ 	bool ReadCompass(byte register, int& v0, int& v1, int& v2 );
+
+ 	//=====================================================================
+ 	/**
+ 	 * Reads a single value from the compass and returns it. The value is built from 
+ 	 * two bytes which are read from the compass and then combined
+ 	 */
+ 	int ReadValue();
+
+ 	//=====================================================================
+ 	/**
+ 	 * Combines a "high" and "low" byte to form one value.
+ 	 * @param  high [description]
+ 	 * @param  low  [description]
+ 	 * @return      [description]
+ 	 */
+ 	int CombineByte(byte high, byte low);
 
  	//*******************************************************************************//
 	// Member Fields               											 
 	//*******************************************************************************//
 public:
-	int TimeOut;			// The max amount of time to wait around for valid
+	unsigned int TimeOut;		// The max amount of time to wait around for valid
 					// data before giving up in milliseconds.
  };
 

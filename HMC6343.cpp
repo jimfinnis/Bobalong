@@ -14,39 +14,40 @@
 
  #define Null 0
 
-/*=======================================================
-*/
+//*******************************************************************************//
+//  Constructor											 
+//*******************************************************************************//
+	
+
+//=====================================================================
 HMC6343::HMC6343() {
 	Wire.begin();
 	TimeOut = 30;
 }
 
-/*=======================================================
-* Determines if the compass is function correctly.
-*/
+//*******************************************************************************//
+//  Public Methods											 
+//*******************************************************************************//
+
+
+//=====================================================================
 bool HMC6343::IsFunctioning() {
-	float x, y, z;
+	int x, y, z;
 	if(ReadCompass(HMC6343_BEARING_REG, x, y, z))
 		return false;
 	return true;
 }
 
-/*=======================================================
- * Returns the bearing in degress of a HMC6343 compass.
- * Includes heading, pitch, and roll.
- */
-void HMC6343::GetBearing(float& heading, float& pitch, float& roll) {
+//=====================================================================
+void HMC6343::GetBearing(int& heading, int& pitch, int& roll) {
 	ReadCompass(HMC6343_BEARING_REG, heading, pitch, roll);
 	heading = heading/10;
 	pitch = pitch/10;
 	roll = roll/10;
 }
 
-/*=======================================================
- * Returns the acceleration in the x,y, and z axis of a 
- * HMC6343 compass. 
- */
-void HMC6343::GetAcceleration(float& x, float& y, float& z) {
+//=====================================================================
+void HMC6343::GetAcceleration(int& x, int& y, int& z) {
 	ReadCompass(HMC6343_ACCELEROMETER_REG, x, y, z);
 	x /= 10;
 	y /= 10;
@@ -57,16 +58,8 @@ void HMC6343::GetAcceleration(float& x, float& y, float& z) {
 // HMC6343 interaction
 
 
-/*=======================================================
- * Returns a byte from a register in the I2C device.
- *
- * @param register 		The register on the HMC6343 we want to 
- *				access.
- * @param v0			The first value that is returned from the HMC.
- * @param v1			The second value that is returned from the HMC.
- * @param v2			The third value that is returned from the HMC.
- */
-bool HMC6343::ReadCompass(byte register, float& v0, float& v1, float& v2 ) {
+//=====================================================================
+bool HMC6343::ReadCompass(byte register, int& v0, int& v1, int& v2 ) {
 	byte high, low;
 
 	// Start the communication with the I2C device
@@ -77,7 +70,7 @@ bool HMC6343::ReadCompass(byte register, float& v0, float& v1, float& v2 ) {
 	Wire.endTransmission();
 	Wire.requestFrom(HMC6343_ADDRESS, 6);
 
-	float startTime = millis();
+	unsigned long startTime = millis();
 
 	bool gettingData = false;
 	 // Wait for the data
@@ -99,11 +92,8 @@ bool HMC6343::ReadCompass(byte register, float& v0, float& v1, float& v2 ) {
 	return true;
 }
 
-/*=======================================================
- * Reads a value from the compass, each value consists of two bytes 
- * which are combined and returned.
- */
-float HMC6343::ReadValue() {
+//=====================================================================
+int HMC6343::ReadValue() {
 	byte high, low;
 
 	 high = Wire.read();
@@ -117,6 +107,6 @@ float HMC6343::ReadValue() {
  * @param v0			The first byte for a value returned by the HMC.
  * @param v0			The second byte for a value returnd by the HMC.
  */
-float HMC6343::CombineByte(byte high, byte low) {
+int HMC6343::CombineByte(byte high, byte low) {
 	return ((high << 8)+ low);
 }

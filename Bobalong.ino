@@ -6,6 +6,7 @@
 
 /////////////////////////////////////////////////////////////////
 // Boat libraries
+#include "Types.h"
 #include "HMC6343.h"
 #include "TinyGPSPlus.h"
 #include "Rowind.h"
@@ -14,32 +15,15 @@
 // Variables
 
 HMC6343 Compass;
+BoatData Boat;
 TinyGPSPlus gps;
 Rowind rowind(4,5);
 SoftwareSerial ss(2,3);
 
+
 Servo rudder;
-
-// Bearing data
-float C_Heading; 
-float C_Roll;
-
-// Wind data
-float m_WindSpeed;
-float m_WindDir;
-
-//GPS data
-double gps_lat;
-double gps_long;
-uint8_t gps_month;
-uint8_t gps_day;
-uint8_t gps_hours;
-uint8_t gps_minutes;
-
 // Autonomous sailing
 int m_DestHeading;
-//int m_TestHeading = 300;
-//int m_TestDest = 360;
 
 /////////////////////////////////////////////////////////////////
 void setup() {
@@ -60,7 +44,7 @@ void setup() {
 				
 	// Get starting boat heading
 	UpdateCompass();
-	m_DestHeading = C_Heading;
+	m_DestHeading = Boat.Heading;
 	Serial.println(m_DestHeading);
  
 	rudder.attach(9);
@@ -76,7 +60,8 @@ void loop() {
 	UpdateCompass();
 	UpdateGPS();
 	delay(77);
-	rowind.GetData(m_WindDir, m_WindSpeed);
+
+	rowind.GetData(Boat.WindDirection, Boat.WindSpeed);
 				
 	KeepHeading();
 					
@@ -94,8 +79,8 @@ void loop() {
 /////////////////////////////////////////////////////////////////
 
 void UpdateCompass() {
-	float pitch = 0;
-	Compass.GetBearing(C_Heading, pitch, C_Roll);
+	int pitch = 0;
+	Compass.GetBearing(Boat.Heading, Boat.Pitch, Boat.Roll);
 }
 
 
@@ -107,30 +92,32 @@ void UpdateGPS(){
 		{
 			// Debugger LED
 			digitalWrite(13, LOW);
-			gps_lat = gps.location.lat();
-			gps_long = gps.location.lng();
-			gps_day = gps.date.day();
-			gps_month = gps.date.month();
-			gps_minutes = gps.time.minute();
-			gps_hours = gps.time.hour();
-			}
+
+			// Store GPS data
+			Boat.Latitude = gps.location.lat();
+			Boat.Longitude = gps.location.lng();
+			Boat.Date = gps.date.value();
+			Boat.Time = gps.time.value();
+		}
 	}   
 }
 /////////////////////////////////////////////////////////////
-// Logs all the data
+// Logs all the data to the openlogger
 void LogData() {
 	// Boat Heading
-	Serial.print("bhead="); Serial.print(C_Heading); Serial.print(" ");
+	Serial.print("bhead="); Serial.print(Boat.Heading); Serial.print(" ");
 	// Boat Wind Dir
-	Serial.print("wind="); Serial.print(m_WindDir); Serial.print(" ");
+	Serial.print("wind="); Serial.print(Boat.WindDirection); Serial.print(" ");
 	// Wind speed
-	Serial.print("windSpd="); Serial.print(m_WindSpeed); Serial.print(" ");
+	Serial.print("windSpd="); Serial.print(Boat.WindSpeed); Serial.print(" ");
 	// Lat
-	Serial.print("lat="); Serial.print(gps_lat); Serial.print(" ");
+	Serial.print("lat="); Serial.print(Boat.Latitude); Serial.print(" ");
 	// Long
-	Serial.print("lon="); Serial.print(gps_long); Serial.print(" ");
+	Serial.print("lon="); Serial.print(Boat.Longitude); Serial.print(" ");
 	// TIme
-	Serial.print("time="); Serial.print(gps_hours); Serial.print(":"); Serial.println(gps_minutes);
+	Serial.print("date="); Serial.print(Boat.Date); Serial.print(" ");
+	// TIme
+	Serial.print("time="); Serial.print(Boat.Time); Serial.println(" ");
 }
 
 /////////////////////////////////////////////////////////////
@@ -138,14 +125,14 @@ void LogData() {
 
 // facing when started.
 void KeepHeading() {
-	int headingOff = (int)C_Heading - m_DestHeading;
+	int headingOff = Boat.Heading - m_DestHeading;
 	
 	if(headingOff > -1 && headingOff < 1) {
 		rudder.write(90);
 		return;
 	}
 	
-	if(C_Heading >= 0 && C_Heading < 180) {
+	if(Boat.Heading >= 0 && Boat.Heading < 180) {
 		float pOff = (float)headingOff / 180.0f;
 		int rot = 90 + (int)(pOff * 90);
 		rudder.write(rot);

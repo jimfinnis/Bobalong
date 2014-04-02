@@ -37,8 +37,9 @@ Rowind::Rowind(int rx, int tx)
 
 //=====================================================================
 bool Rowind::IsFunctioning() {
-	if(GetLine() != Null)
+	if(GetLine() != Null) {
 		return true;
+	}
 	return false;
 }
 
@@ -60,12 +61,9 @@ bool Rowind::GetData(float& direction, float& speed) {
 	//  Splits the string into tokens whic hare seperated by ','. Returns null when at the end
 	while ((str = strtok_r( s, ",", &s )) != NULL )
 	{
-		// Prints the token we are currently working on
-        	//Serial.println(str);
-		// Second token contains the windw direction
+		// Second token contains the wind direction
 		if ( i == 1 )
 		{
-	          	// Inteprets the data as a floating point and then returns the wind direction as a double.
 			direction = atof( str );
 
 		// fourth token contains wind speed
@@ -86,7 +84,7 @@ bool Rowind::GetData(float& direction, float& speed) {
 char* Rowind::GetLine() {
 	char line[80];
 	bool gotData = false;
-	float startTime = millis();
+	unsigned long startTime = millis();
 
 	// Search for the correct rowind data line.
 	while(!gotData && startTime > millis() - TimeOut) {

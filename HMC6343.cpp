@@ -22,7 +22,7 @@
 //=====================================================================
 HMC6343::HMC6343() {
 	Wire.begin();
-	TimeOut = 30;
+	TimeOut = 2000;
 }
 
 //*******************************************************************************//
@@ -34,8 +34,8 @@ HMC6343::HMC6343() {
 bool HMC6343::IsFunctioning() {
 	int x, y, z;
 	if(ReadCompass(HMC6343_BEARING_REG, x, y, z))
-		return false;
-	return true;
+		return true;
+	return false;
 }
 
 //=====================================================================
@@ -70,19 +70,16 @@ bool HMC6343::ReadCompass(byte register, int& v0, int& v1, int& v2 ) {
 	Wire.endTransmission();
 	Wire.requestFrom(HMC6343_ADDRESS, 6);
 
-	unsigned long startTime = millis();
+	unsigned long endTime = millis() + TimeOut;
 
-	bool gettingData = false;
 	 // Wait for the data
-	while(Wire.available() < 1 && startTime > millis() - TimeOut && !gettingData) {
-		if(Wire.available() > 0) {
-			gettingData = true;
-		}
+	while(Wire.available() < 1 && millis() <= endTime) {
 	}
-
-	if(!gettingData) {
-		return false;
-	}
+        
+        // Check to see if we timeout
+        if(Wire.available() < 1 ) {
+            return false;
+        }
 
 	// Read the data
 	v0 = ReadValue();

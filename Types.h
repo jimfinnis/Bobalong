@@ -25,8 +25,21 @@ struct BoatData {
 	//GPS data
 	double Latitude;
 	double Longitude;
-	uint32_t Date;
-	uint32_t Time;
+
+	// The heading of the boat acoording to the GPS in degrees
+	double Course;
+
+	// Speed in knots, gathered from the GPS.
+	double Speed
+
+	// Date
+	uint8_t DateDay;
+        	uint8_t DateMonth;
+
+        	// Time
+	uint8_t TimeHours;
+        	uint8_t TimeMinutes;
+        	uint8_t TimeSeconds;
 };
 
 #endif

@@ -27,6 +27,7 @@ Rowind::Rowind(int rx, int tx)
 	 : m_Serial(rx, tx) 
 { 
 	m_Serial.begin(4800);
+        TimeOut = 2000;
 }
 
 
@@ -84,10 +85,10 @@ bool Rowind::GetData(float& direction, float& speed) {
 char* Rowind::GetLine() {
 	char line[80];
 	bool gotData = false;
-	unsigned long startTime = millis();
+	unsigned long endTime = millis() + TimeOut;
 
 	// Search for the correct rowind data line.
-	while(!gotData && startTime > millis() - TimeOut) {
+	while(!gotData && millis() < endTime) {
 		char c = m_Serial.read();
 		delay(3);
 		// Start of a rowind sentence
@@ -108,10 +109,9 @@ char* Rowind::GetLine() {
 			}
 		}
 	}
-
-	if(!gotData) {
-		return Null;
-	}
-
+        
+        if(!gotData)
+          return Null;
+        
 	return line;
 }

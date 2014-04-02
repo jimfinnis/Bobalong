@@ -14,11 +14,22 @@
 /////////////////////////////////////////////////////////////////
 // Variables
 
+#define GPS_Enable 7
+#define GPS_RXPIN 2
+#define GPS_TXPIN 3
+
+#define ROWIND_PIN 4
+
+// Servo pins
+#define RUDDER_PIN 9 // Blue wire
+#define SAIL_PIN 10 // Gray wire
+
+
 HMC6343 Compass;
 BoatData Boat;
 TinyGPSPlus gps;
-Rowind rowind(4,5);
-SoftwareSerial ss(2,3);
+Rowind rowind(ROWIND_PIN,5);
+SoftwareSerial ss(GPS_RXPIN,GPS_TXPIN);
 
 
 Servo rudder;
@@ -41,13 +52,18 @@ void setup() {
 	if(!rowind.IsFunctioning()) {
 		Serial.println("Error with Rowind!");
 	}
+
+        
+        // GPS enable
+        pinMode(GPS_Enable, OUTPUT);
+        digitalWrite(GPS_Enable, HIGH);
 				
 	// Get starting boat heading
 	UpdateCompass();
 	m_DestHeading = Boat.Heading;
 	Serial.println(m_DestHeading);
  
-	rudder.attach(9);
+	rudder.attach(RUDDER_PIN);
 	rudder.write(90);
 }
 
@@ -79,7 +95,6 @@ void loop() {
 /////////////////////////////////////////////////////////////////
 
 void UpdateCompass() {
-	int pitch = 0;
 	Compass.GetBearing(Boat.Heading, Boat.Pitch, Boat.Roll);
 }
 
@@ -96,8 +111,16 @@ void UpdateGPS(){
 			// Store GPS data
 			Boat.Latitude = gps.location.lat();
 			Boat.Longitude = gps.location.lng();
-			Boat.Date = gps.date.value();
-			Boat.Time = gps.time.value();
+
+			Boat.DateDay = gps.date.day();
+                       		Boat.DateMonth = gps.date.month(); 
+
+			Boat.TimeHours = gps.time.hour();
+                        		Boat.TimeMinutes = gps.time.minute();
+                        		Boat.TimeSeconds = gps.time.second();
+
+                        		Boat.Course = gps.course.deg();
+                        		Boat.speed = gps.speed.knots();
 		}
 	}   
 }
@@ -106,18 +129,22 @@ void UpdateGPS(){
 void LogData() {
 	// Boat Heading
 	Serial.print("bhead="); Serial.print(Boat.Heading); Serial.print(" ");
+	// GPS Heading
+	Serial.print("gpshead="); Serial.print(Boat.Course); Serial.print(" ");
+	// Speed
+	Serial.print("knots="); Serial.print(Boat.Speed); Serial.print(" ");
 	// Boat Wind Dir
 	Serial.print("wind="); Serial.print(Boat.WindDirection); Serial.print(" ");
 	// Wind speed
 	Serial.print("windSpd="); Serial.print(Boat.WindSpeed); Serial.print(" ");
 	// Lat
-	Serial.print("lat="); Serial.print(Boat.Latitude); Serial.print(" ");
+	Serial.print("lat="); Serial.print(Boat.Latitude,5); Serial.print(" ");
 	// Long
-	Serial.print("lon="); Serial.print(Boat.Longitude); Serial.print(" ");
+	Serial.print("lon="); Serial.print(Boat.Longitude,5); Serial.print(" ");
+	// Date
+	Serial.print("date="); Serial.print(Boat.DateDay); Serial.print(":"); Serial.print(Boat.DateMonth); Serial.print(" ");
 	// TIme
-	Serial.print("date="); Serial.print(Boat.Date); Serial.print(" ");
-	// TIme
-	Serial.print("time="); Serial.print(Boat.Time); Serial.println(" ");
+	Serial.print("time="); Serial.print(Boat.TimeHours); Serial.print(":"); Serial.print(Boat.TimeMinutes); Serial.print(":"); Serial.print(Boat.TimeSeconds); Serial.println(" ");
 }
 
 /////////////////////////////////////////////////////////////

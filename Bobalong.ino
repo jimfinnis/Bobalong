@@ -24,6 +24,9 @@
 #define RUDDER_PIN 9 // Blue wire
 #define SAIL_PIN 10 // Gray wire
 
+//Define pid coefs
+#define RUDDER_P_COEF 0.5f
+
 
 HMC6343 Compass;
 BoatData Boat;
@@ -77,7 +80,7 @@ void loop() {
 	UpdateGPS();
 	delay(77);
 
-	rowind.GetData(Boat.WindDirection, Boat.WindSpeed);
+	//rowind.GetData(Boat.WindDirection, Boat.WindSpeed);
 				
 	KeepHeading();
 					
@@ -113,14 +116,14 @@ void UpdateGPS(){
 			Boat.Longitude = gps.location.lng();
 
 			Boat.DateDay = gps.date.day();
-                       		Boat.DateMonth = gps.date.month(); 
+                       	Boat.DateMonth = gps.date.month(); 
 
 			Boat.TimeHours = gps.time.hour();
-                        		Boat.TimeMinutes = gps.time.minute();
-                        		Boat.TimeSeconds = gps.time.second();
+                        Boat.TimeMinutes = gps.time.minute();
+                        Boat.TimeSeconds = gps.time.second();
 
-                        		Boat.Course = gps.course.deg();
-                        		Boat.speed = gps.speed.knots();
+                        Boat.Course = gps.course.deg();
+                        Boat.Speed = gps.speed.knots();
 		}
 	}   
 }
@@ -147,25 +150,35 @@ void LogData() {
 	Serial.print("time="); Serial.print(Boat.TimeHours); Serial.print(":"); Serial.print(Boat.TimeMinutes); Serial.print(":"); Serial.print(Boat.TimeSeconds); Serial.println(" ");
 }
 
+int getHeadingDifference(int heading1, int heading2){
+  int result = heading1 - heading2;
+  
+  if (result < -180){
+   return 360 + result;
+  }
+  if ( result > 180 ){
+   return 0 - (360 - result);
+  }
+  return result;
+}
+
+/*setWaypoint(latitude, longitude){
+    
+}*/
+
 /////////////////////////////////////////////////////////////
 // Tries to keep the boat heading in the direction it was 
 
 // facing when started.
 void KeepHeading() {
-	int headingOff = Boat.Heading - m_DestHeading;
+	int headingOff = getHeadingDifference(Boat.Heading, m_DestHeading);
 	
 	if(headingOff > -1 && headingOff < 1) {
 		rudder.write(90);
 		return;
 	}
-	
-	if(Boat.Heading >= 0 && Boat.Heading < 180) {
-		float pOff = (float)headingOff / 180.0f;
-		int rot = 90 + (int)(pOff * 90);
-		rudder.write(rot);
-	} else {
-		float pOff = (float)headingOff / 180.0f;
-		int rot = 90 - (int)(pOff * 90);
-		rudder.write(rot);
-	}
+
+        int rot = 90 + (int)(headingOff * RUDDER_P_COEF);
+        Serial.print("Rudder: "); Serial.println(rot);
+        rudder.write(rot);
 }

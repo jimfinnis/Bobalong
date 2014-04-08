@@ -30,7 +30,7 @@ struct BoatData {
 	double Course;
 
 	// Speed in knots, gathered from the GPS.
-	double Speed
+	double Speed;
 
 	// Date
 	uint8_t DateDay;

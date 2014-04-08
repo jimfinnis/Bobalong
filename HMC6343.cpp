@@ -59,14 +59,13 @@ void HMC6343::GetAcceleration(int& x, int& y, int& z) {
 
 
 //=====================================================================
-bool HMC6343::ReadCompass(byte register, int& v0, int& v1, int& v2 ) {
+bool HMC6343::ReadCompass(byte reg, int& v0, int& v1, int& v2 ) {
 	byte high, low;
 
 	// Start the communication with the I2C device
 	Wire.beginTransmission(HMC6343_ADDRESS);
-
 	// Send the address of the registers we want to read
-	Wire.write(HMC6343_ACCELEROMETER_REG);
+	Wire.write(reg);
 	Wire.endTransmission();
 	Wire.requestFrom(HMC6343_ADDRESS, 6);
 

@@ -42,4 +42,10 @@ struct BoatData {
         	uint8_t TimeSeconds;
 };
 
+/// Defines a position used by the boat to navigate.
+struct Waypoint {
+	double Latitude;
+	double Longitude;
+}
+
 #endif

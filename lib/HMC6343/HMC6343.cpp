@@ -1,4 +1,3 @@
-
 /*
  * HMC6343.cpp - A library for using the HMC6343 compass with a ardunio.
  * 
@@ -72,13 +71,12 @@ bool HMC6343::ReadCompass(byte reg, int& v0, int& v1, int& v2 ) {
 	unsigned long endTime = millis() + TimeOut;
 
 	 // Wait for the data
-	while(Wire.available() < 1 && millis() <= endTime) {
-	}
+	while(Wire.available() < 1 && millis() <= endTime) {}
         
-        // Check to see if we timeout
-        if(Wire.available() < 1 ) {
-            return false;
-        }
+    // Check to see if we timeout
+    if(Wire.available() < 1 ) {
+        return false;
+    }
 
 	// Read the data
 	v0 = ReadValue();

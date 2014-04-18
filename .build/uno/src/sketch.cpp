@@ -1,15 +1,32 @@
-// Arduino Libraries
+#include <Arduino.h>
 #include <Servo.h>
 #include <Wire.h>
 #include <SoftwareSerial.h>
 #include <stdint.h>
-
-/////////////////////////////////////////////////////////////////
-// Boat libraries
 #include "Types.h"
 #include "HMC6343.h"
 #include "TinyGPSPlus.h"
 #include "Rowind.h"
+void setup();
+void loop();
+void UpdateCompass();
+void UpdateGPS();
+void LogData();
+int getHeadingDifference(int heading1, int heading2);
+void KeepHeading();
+#line 1 "src/sketch.ino"
+// Arduino Libraries
+//#include <Servo.h>
+//#include <Wire.h>
+//#include <SoftwareSerial.h>
+//#include <stdint.h>
+
+/////////////////////////////////////////////////////////////////
+// Boat libraries
+//#include "Types.h"
+//#include "HMC6343.h"
+//#include "TinyGPSPlus.h"
+//#include "Rowind.h"
 
 /////////////////////////////////////////////////////////////////
 // Variables
@@ -43,7 +60,7 @@ int m_DestHeading;
 void setup() {
 	Serial.begin(9600);
 	ss.begin(4800);
-	
+
 	// Light up debugger LED
 	pinMode(13, OUTPUT);
 	digitalWrite(13, HIGH);
@@ -60,7 +77,7 @@ void setup() {
         // GPS enable
         pinMode(GPS_Enable, OUTPUT);
         digitalWrite(GPS_Enable, HIGH);
-				
+
 	// Get starting boat heading
 	UpdateCompass();
 	m_DestHeading = Boat.Heading;
@@ -81,14 +98,14 @@ void loop() {
 	delay(77);
 
 	//rowind.GetData(Boat.WindDirection, Boat.WindSpeed);
-				
+
 	KeepHeading();
-					
+
 	// Log it
 	LogData();
-	
+
 	digitalWrite(13,LOW);
-	
+
 	// Don't update or log for 5 seconds
 	delay(500);
 }
@@ -172,7 +189,7 @@ int getHeadingDifference(int heading1, int heading2){
 // facing when started.
 void KeepHeading() {
 	int headingOff = getHeadingDifference(Boat.Heading, m_DestHeading);
-	
+
 	if(headingOff > -1 && headingOff < 1) {
 		rudder.write(90);
 		return;

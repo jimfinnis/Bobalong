@@ -1,4 +1,3 @@
-
 /*
  * HMC6343.h - A library for using the HMC6343 compass with a ardunio.
   * 
@@ -15,9 +14,9 @@
 
 #define HMC6343_ADDRESS 0x19
 #define HMC6343_BEARING_REG 0x50
- #define HMC6343_ACCELEROMETER_REG 0x40
+#define HMC6343_ACCELEROMETER_REG 0x40
 
- class HMC6343 {
+class HMC6343 {
  public:
  	HMC6343();
 

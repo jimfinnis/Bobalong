@@ -6,10 +6,12 @@
 
 /////////////////////////////////////////////////////////////////
 // Boat libraries
-#include "Types.h"
+
 #include "HMC6343.h"
 #include "TinyGPSPlus.h"
 #include "Rowind.h"
+#include "pid.h"
+#include "Types.h"
 
 /////////////////////////////////////////////////////////////////
 // Variables
@@ -27,7 +29,7 @@
 //Define pid coefs
 #define RUDDER_P_COEF 0.5f
 
-
+PIDController rudder_pid;
 HMC6343 Compass;
 BoatData Boat;
 TinyGPSPlus gps;
@@ -38,6 +40,8 @@ SoftwareSerial ss(GPS_RXPIN,GPS_TXPIN);
 Servo rudder;
 // Autonomous sailing
 int m_DestHeading;
+
+
 
 /////////////////////////////////////////////////////////////////
 void setup() {
@@ -65,7 +69,11 @@ void setup() {
 	UpdateCompass();
 	m_DestHeading = Boat.Heading;
 	Serial.println(m_DestHeading);
- 
+         
+        // Set up pid
+        pid_bundle pid_vals = { RUDDER_P_COEF, 0, 0 };
+        rudder_pid.init(pid_vals);
+         
 	rudder.attach(RUDDER_PIN);
 	rudder.write(90);
 }
@@ -173,12 +181,11 @@ int getHeadingDifference(int heading1, int heading2){
 void KeepHeading() {
 	int headingOff = getHeadingDifference(Boat.Heading, m_DestHeading);
 	
-	if(headingOff > -1 && headingOff < 1) {
-		rudder.write(90);
-		return;
-	}
 
-        int rot = 90 + (int)(headingOff * RUDDER_P_COEF);
+        rudder_pid.update(headingOff, 10 /*If you use i you need to set this properly*/); 
+        
+        
+        int rot = 90 + (int)rudder_pid.output();
         Serial.print("Rudder: "); Serial.println(rot);
         rudder.write(rot);
 }

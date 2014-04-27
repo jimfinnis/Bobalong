@@ -7,6 +7,7 @@
 #include "HMC6343.h"
 #include "TinyGPSPlus.h"
 #include "Rowind.h"
+
 void setup();
 void loop();
 void UpdateCompass();

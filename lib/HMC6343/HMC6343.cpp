@@ -7,7 +7,7 @@
  * This code is released under the terms of the LGPLv3 licence.
  */
 
-#include "Arduino.h"
+//#include "Arduino.h"
 #include "Wire.h"
 #include "HMC6343.h"
 
@@ -32,8 +32,9 @@ HMC6343::HMC6343() {
 //=====================================================================
 bool HMC6343::IsFunctioning() {
 	int x, y, z;
-	if(ReadCompass(HMC6343_BEARING_REG, x, y, z))
+	if(ReadCompass(HMC6343_BEARING_REG, x, y, z)){
 		return true;
+	}
 	return false;
 }
 
@@ -90,7 +91,7 @@ bool HMC6343::ReadCompass(byte reg, int& v0, int& v1, int& v2 ) {
 int HMC6343::ReadValue() {
 	byte high, low;
 
-	 high = Wire.read();
+	high = Wire.read();
 	low = Wire.read();
 
 	return CombineByte(high, low);

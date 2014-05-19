@@ -46,6 +46,6 @@ struct BoatData {
 struct Waypoint {
 	double Latitude;
 	double Longitude;
-}
+};
 
 #endif

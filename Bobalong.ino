@@ -2,13 +2,14 @@
 #include <Servo.h>
 #include <Wire.h>
 #include <stdint.h>
+#include <SoftwareSerial.h>
 
 /////////////////////////////////////////////////////////////////
 // Boat libraries
 #include "type_defs.h"
-#include "drivers/compass.h"
-#include "drivers/wind_sensor.h"
-#include "drivers/gps.h"
+#include "compass.h"
+#include "wind_sensor.h"
+#include "gps.h"
 
 /////////////////////////////////////////////////////////////////
 // Variables
@@ -19,13 +20,10 @@
 
 Boat boat;
 
-// Autonomous sailing
-int m_DestHeading;
-
 //////////////////////////////////////////////////////////////////////////
 void setup() {
 	Serial.begin(9600);
-	Compass::Initialise();
+	WindSensor::Initialise();
 	GPS::Initialise();
 
 	// Wait for everything to get running.
@@ -51,8 +49,6 @@ void loop() {
 	UpdateGPS();
 	delay(77);
 	UpdateWind();
-				
-	KeepHeading();
 					
 	// Log it
 	LogData();
@@ -69,20 +65,20 @@ void loop() {
 void UpdateCompass() {
 	BearingData bearing;
 
-	if(Compass::GetBearing(&bearing)) {
+	if(Compass::GetBearing(bearing)) {
 		boat.bearing = bearing;
 	} else {
-		Serial.println("Warning: Failed to read compass!")
+		Serial.println("Warning: Failed to read compass!");
 	}
 }
 
 //////////////////////////////////////////////////////////////////////////
 void UpdateWind() {
 	WindData wind;
-	if(WindSensor::Read(&wind)) {
+	if(WindSensor::Read(wind)) {
 		boat.wind = wind;
 	} else {
-		Serial.println("Warning: Failed to read wind sensor")
+		Serial.println("Warning: Failed to read wind sensor");
 	}
 }
 
@@ -93,7 +89,7 @@ void UpdateGPS(){
 		boat.position = GPS::GetPosition();
 		boat.course = GPS::GetCourse();
 	}
-	boat.date_time = GPS::GetDataTime();  
+	boat.date_time = GPS::GetDateTime();  
 }
 
 //////////////////////////////////////////////////////////////////////////

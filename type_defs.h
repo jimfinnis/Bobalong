@@ -13,8 +13,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-typdef unsigned char	byte
-typedf unsigned int		uint
+#include "Arduino.h"
 
 struct BearingData {
 	int heading;
@@ -48,7 +47,7 @@ struct Boat {
 	BearingData bearing;
 	WindData	wind;
 	GPSPosition	position;
-	GPSDataTime	date_time;
+	GPSDateTime	date_time;
 	GPSCourse	course;
 	bool		has_fix;
 };

@@ -38,5 +38,6 @@
 #else
 #define _SDA	A4
 #define _SCL	A5
+#endif
 
 #endif

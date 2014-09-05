@@ -8,13 +8,15 @@
 
 #include "waypoint_mgr.h"
 
-#define WP_MGR_MAX_WAYPOINTS
+#define WP_MGR_MAX_WAYPOINTS 		10
+#define WP_MGR_PROXIMITY			0.0001
 
 //////////////////////////////////////////////////////////////////////////
 /// Static Variables
 //////////////////////////////////////////////////////////////////////////
 
-
+uint WaypointMgr::waypoint_count;
+Waypoint* Waypoint::link_list;
 
 //////////////////////////////////////////////////////////////////////////
 GPSPosition WaypointMgr::GetCurrentWaypoint()
@@ -25,7 +27,14 @@ GPSPosition WaypointMgr::GetCurrentWaypoint()
 //////////////////////////////////////////////////////////////////////////
 bool WaypointMgr::CheckProximity(GPSPosition curr_pos)
 {
-	// todo
+	GPSPosition curr_wp = GetCurrentWaypoint();
+
+	if(abs(curr_pos.latitude - curr_wp.latitude) <= WP_MGR_PROXIMITY && 
+		abs(curr_pos.longitude - curr_wp.longitude) <= WP_MGR_PROXIMITY) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -12,13 +12,13 @@
 
 namespace WaypointMgr
 {
-	struct Waypoint {
+	static struct Waypoint {
 		GPSPosition position;
 		Waypoint* next_waypoint;
 	};
 
-	uint waypoint_count;
-	Waypoint* link_list;
+	static uint waypoint_count;
+	static Waypoint* link_list;
 
 	/**********************************************************************************
 	 * Returns the current waypoint.

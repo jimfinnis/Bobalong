@@ -1,10 +1,6 @@
 /*
 	pin_defs.h 
 
-	Author: David Capper
-	Created: 10/08/14
- 	GitHub: https://github.com/thip
-
 	Contains all the pin definitions.
 
 	This code is released under the terms of the LGPLv3 licence.

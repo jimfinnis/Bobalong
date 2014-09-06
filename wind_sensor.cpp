@@ -1,10 +1,6 @@
 /*
 	wind_sensor.cpp
 
-	Author: Jordan Springett
-	Created: 10/08/14
- 	GitHub: https://github.com/JSpringett
-
 	Provides functions for interacting with Bobalong's Rowind wind sensor. The
 	wind sensor uses a software serial to communicate with the device.
 

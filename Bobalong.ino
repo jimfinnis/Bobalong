@@ -14,10 +14,6 @@
 /////////////////////////////////////////////////////////////////
 // Variables
 
-#define GPS_Enable 7
-#define GPS_RXPIN 2
-#define GPS_TXPIN 3
-
 Boat boat;
 
 //////////////////////////////////////////////////////////////////////////
@@ -32,12 +28,6 @@ void setup() {
 	// Light up debugger LED
 	pinMode(13, OUTPUT);
 	digitalWrite(13, HIGH);
-
-    /* Needed?    
-    // GPS enable
-    pinMode(GPS_Enable, OUTPUT);
-    digitalWrite(GPS_Enable, HIGH);
-    */	
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -52,7 +42,10 @@ void loop() {
 					
 	// Log it
 	LogData();
+
+	// Set the rudder and sail
 	
+
 	// Causes the debug LED to flash, so we know the code hasn't gotten
 	// stuck somewhere.
 	digitalWrite(13,LOW);

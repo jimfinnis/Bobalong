@@ -1,10 +1,6 @@
 /*
 	compass.cpp
 
-	Author: Jordan Springett
-	Created: 10/08/14
- 	GitHub: https://github.com/JSpringett
-
 	Provides functions for interacting with Bobalong's HMC6343 electronic compass
 
 	This code is released under the terms of the LGPLv3 licence.

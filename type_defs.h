@@ -1,10 +1,6 @@
 /*
 	type_defs.h 
 
-	Author: Jordan Springett
-	Created: 10/08/14
- 	GitHub: https://github.com/JSpringett
-
 	Contains all the type defs and structs used in the project.
 
 	This code is released under the terms of the LGPLv3 licence.

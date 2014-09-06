@@ -1,10 +1,6 @@
 /*
 	gps.c
 
-	Author: Jordan Springett
-	Created: 10/08/14
- 	GitHub: https://github.com/JSpringett
-
 	Contains functions for dealing with the boat's GPS. To use the 
 	GPS it must first be initialised. The GPS uses TinyGPS to parse the GPS NMEA strings
 

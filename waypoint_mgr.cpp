@@ -15,8 +15,8 @@
 /// Static Variables
 //////////////////////////////////////////////////////////////////////////
 
-uint WaypointMgr::waypoint_count;
-Waypoint* Waypoint::link_list;
+//uint WaypointMgr::waypoint_count;
+//Waypoint* Waypoint::link_list;
 
 //////////////////////////////////////////////////////////////////////////
 GPSPosition WaypointMgr::GetCurrentWaypoint()
@@ -40,7 +40,7 @@ bool WaypointMgr::CheckProximity(GPSPosition curr_pos)
 //////////////////////////////////////////////////////////////////////////
 void WaypointMgr::Advance()
 {
-	Waypoint* next = link_list->next_waypoint;
+	Waypoint* next = link_list->next;
 
 	// Clean up the current waypoint
 	delete link_list;
@@ -56,7 +56,7 @@ void WaypointMgr::PushWaypoint(GPSPosition position)
 		waypoint_count++;
 
 		// Create the new waypoint
-		Waypoint wp = new Waypoint();
+		Waypoint* wp = new Waypoint();
 		wp->position = position;
 
 		// Navigate to the last waypoint
@@ -71,9 +71,13 @@ void WaypointMgr::PushWaypoint(GPSPosition position)
 }
 
 //////////////////////////////////////////////////////////////////////////
-GPSPosition WaypointMgr::GetWaypoint()
+GPSPosition WaypointMgr::GetWaypoint(uint index)
 {
-	return link_list->position;
+        Waypoint* next_wp = link_list;
+	for(uint i = 0; i <= index; i++) {
+		next_wp = next_wp->next;
+	} 
+	return next_wp->position;
 }
 
 //////////////////////////////////////////////////////////////////////////

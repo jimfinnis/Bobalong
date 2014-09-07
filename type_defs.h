@@ -9,7 +9,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include "Arduino.h"
+typedef unsigned int uint;
 
 struct BearingData {
 	int heading;

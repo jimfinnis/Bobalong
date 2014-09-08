@@ -15,6 +15,8 @@
 // Variables
 
 Boat boat;
+Servo rudder(_SV_1);
+Servo sail(_SV_2);
 
 //////////////////////////////////////////////////////////////////////////
 void setup() {
@@ -43,8 +45,11 @@ void loop() {
 	// Log it
 	LogData();
 
-	// Set the rudder and sail
-	
+	// If we have any waypoints navigate to them.
+	if(WaypointMgr::GetWaypointCount > 0) {
+		int desired_heading = Navigation::GetDesiredHeading(boat.bearing.heading);
+		rudder.write(desired_heading);
+	}
 
 	// Causes the debug LED to flash, so we know the code hasn't gotten
 	// stuck somewhere.

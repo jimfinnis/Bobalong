@@ -3,7 +3,8 @@
 #include <Wire.h>
 #include <stdint.h>
 #include <SoftwareSerial.h>
-
+#include <FileIO.h>
+#include <Time.h>
 /////////////////////////////////////////////////////////////////
 // Boat libraries
 #include "type_defs.h"
@@ -49,19 +50,21 @@ int desired_heading;
 int relative_wind;
 
 // Tacking
-bool started_tack;
+bool change_tack;
 bool tack_left;
 int tack_heading;
 GPSPosition tack_pos;
 
 //////////////////////////////////////////////////////////////////////////
 void setup() {
-	Serial.begin(9600);
 	WindSensor::Initialise();
 	GPS::Initialise();
-        
-        rudder.attach(_SV_1);
-        sail.attach(_SV_2);
+    Bridge.begin(); 
+    Serial.begin(9600);
+    FileSystem.begin();
+
+    rudder.attach(_SV_1);
+    sail.attach(_SV_2);
         
 	// Wait for everything to get running.
 	delay(100);
@@ -72,7 +75,7 @@ void setup() {
 
 	// Hold untill we tell it to sail
 	current_mode = SM_HOLD;
-	started_tack = true;
+	change_tack = true;
 	tack_left = true;
         desired_heading = 0;
 	rudder_freq_counter = RUDDER_CHANGE_FREG;
@@ -153,31 +156,32 @@ void UpdateGPS(){
 		boat.position = GPS::GetPosition();
 		boat.course = GPS::GetCourse();
 	}
-	boat.date_time = GPS::GetDateTime();  
+	boat.date_time = GPS::GetDateTime();
+	setTime(boat.date_time.time);
 }
 
 //////////////////////////////////////////////////////////////////////////
 void LogData() {
-	// TODO: SD YUN card
+	File log  = FileSystem.open("/mnt/sd/boat_log.txt", FILE_APPEND);
 
-	// Boat Heading
-	Serial.print("bhead="); Serial.print(boat.bearing.heading); Serial.print(" ");
-	// GPS Heading
-	Serial.print("gpshead="); Serial.print(boat.course.bearing); Serial.print(" ");
-	// Speed
-	Serial.print("knots="); Serial.print(boat.course.speed); Serial.print(" ");
-	// Boat Wind Dir
-	Serial.print("wind="); Serial.print(boat.wind.direction); Serial.print(" ");
-	// Wind speed
-	Serial.print("windSpd="); Serial.print(boat.wind.speed); Serial.print(" ");
-	// Lat
-	Serial.print("lat="); Serial.print(boat.position.latitude,5); Serial.print(" ");
-	// Long
-	Serial.print("lon="); Serial.print(boat.position.longitude,5); Serial.print(" ");
-	// Date
-	Serial.print("date="); Serial.print(boat.date_time.date); Serial.print(" ");
 	// Time
-	Serial.print("time="); Serial.print(boat.date_time.time); Serial.println(" ");
+	log.print("time="); log.print(now()); log.println(" ");
+	// Boat Heading
+	log.print("bhead="); log.print(boat.bearing.heading); log.print(" ");
+	// GPS Heading
+	log.print("gpshead="); log.print(boat.course.bearing); log.print(" ");
+	// Speed
+	log.print("knots="); log.print(boat.course.speed); log.print(" ");
+	// Boat Wind Dir
+	log.print("wind="); log.print(boat.wind.direction); log.print(" ");
+	// Wind speed
+	log.print("windSpd="); log.print(boat.wind.speed); log.print(" ");
+	// Lat
+	log.print("lat="); log.print(boat.position.latitude,5); log.print(" ");
+	// Long
+	log.print("lon="); log.print(boat.position.longitude,5); log.println(" ");
+
+	log.close();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -196,9 +200,8 @@ void SailMode_Normal()
 		// Decide if we need to tack
 		if(ShouldTack()) {
 			current_mode = SM_TACKING;
+			change_tack = true;
 		} else {
-			// TURN THE RUDDER IN THE CORRECT DIRECTION!!!
-
 			// set the sails
 			if(relative_wind < 180) {
 				sail.write(SAIL_RIGHT);
@@ -226,8 +229,8 @@ void SailingMode_Tack()
 	}
 
 	// Set the initial tack if we haven't set it yet
-	if(started_tack) {
-		started_tack = false;
+	if(change_tack) {
+		change_tack = false;
 
 		tack_pos = boat.position;
 
@@ -246,7 +249,7 @@ void SailingMode_Tack()
 
 	// Check if we should change tack
 	if(Navigation::GetDistance(boat.position, tack_pos) >= TACK_DISTANCE) {
-		started_tack = true;
+		change_tack = true;
 	}
 }
 
@@ -269,6 +272,5 @@ void KeepHeading() {
 		return;
 	}
 	int rot = 90 + (int)(headingOff * RUDDER_P_COEF);
-	Serial.print("Rudder: "); Serial.println(rot);
 	rudder.write(rot);
 }

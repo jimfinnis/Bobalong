@@ -7,6 +7,7 @@
  */
 
 #include "waypoint_mgr.h"
+#include "math.h"
 
 #define WP_MGR_MAX_WAYPOINTS 		10
 #define WP_MGR_PROXIMITY			0.0001
@@ -29,8 +30,8 @@ bool WaypointMgr::CheckProximity(GPSPosition curr_pos)
 {
 	GPSPosition curr_wp = GetCurrentWaypoint();
 
-	if(abs(curr_pos.latitude - curr_wp.latitude) <= WP_MGR_PROXIMITY && 
-		abs(curr_pos.longitude - curr_wp.longitude) <= WP_MGR_PROXIMITY) {
+	if(fabs(curr_pos.latitude - curr_wp.latitude) <= WP_MGR_PROXIMITY && 
+		fabs(curr_pos.longitude - curr_wp.longitude) <= WP_MGR_PROXIMITY) {
 		return true;
 	} else {
 		return false;
@@ -40,12 +41,15 @@ bool WaypointMgr::CheckProximity(GPSPosition curr_pos)
 //////////////////////////////////////////////////////////////////////////
 void WaypointMgr::Advance()
 {
-	Waypoint* next = link_list->next;
+	// Can't advance if we have no more waypoints
+	if(waypoint_count > 1) {
+		Waypoint* next = link_list->next;
+		// Clean up the current waypoint
+		delete link_list;
 
-	// Clean up the current waypoint
-	delete link_list;
+		link_list = next;
+	}
 
-	link_list = next;
 	waypoint_count--;
 }
 
@@ -73,7 +77,7 @@ void WaypointMgr::PushWaypoint(GPSPosition position)
 //////////////////////////////////////////////////////////////////////////
 GPSPosition WaypointMgr::GetWaypoint(uint index)
 {
-        Waypoint* next_wp = link_list;
+    Waypoint* next_wp = link_list;
 	for(uint i = 0; i <= index; i++) {
 		next_wp = next_wp->next;
 	} 

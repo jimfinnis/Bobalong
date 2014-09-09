@@ -15,12 +15,49 @@ int Navigation::GetDesiredHeading(GPSPosition curr_pos, GPSPosition destination)
 {
 	double lat_rad1 = curr_pos.latitude * MATH_DEG_TO_RAD;
 	double lat_rad2 = destination.latitude * MATH_DEG_TO_RAD;
-	double lon_rad1 = curr_pos.longitude * MATH_DEG_TO_RAD;
-	double lon_rad2 = destination.longitude * MATH_DEG_TO_RAD;
 
 	// Uses the greate circle route
 	double lon = (destination.longitude - curr_pos.longitude) * MATH_DEG_TO_RAD;
 	double y = sin(lon) * cos(lat_rad2);
 	double x = (cos(lat_rad1) * sin(lat_rad2)) - (sin(lat_rad1) * cos(lat_rad2) * cos(lon));
 	return atan2(y, x) * MATH_RAD_TO_DEG;
+}
+
+//////////////////////////////////////////////////////////////////////////
+double Navigation::GetDistance(GPSPosition pos_0, GPSPosition pos_1)
+{
+	double lat_rad1 = pos_0.latitude * MATH_DEG_TO_RAD;
+	double lat_rad2 = pos_1.latitude * MATH_DEG_TO_RAD;
+	double lon_rad1 = pos_0.longitude * MATH_DEG_TO_RAD;
+	double lon_rad2 = pos_1.longitude * MATH_DEG_TO_RAD;
+
+	
+}
+
+//////////////////////////////////////////////////////////////////////////
+int Navigation::GetHeadingDiff(int heading0, int heading1)
+{
+	int heading_diff = heading0 - heading1;
+
+	if(heading_diff < -180) {
+		return 360 + heading_diff;
+	}
+	
+	if(heading_diff > 180) {
+		return 0 - (360 - heading_diff);
+	}
+
+	return heading_diff;
+}
+
+//////////////////////////////////////////////////////////////////////////
+int Navigation::ClampAngle(int angle)
+{
+	if(angle > 359) {
+		return ClampAngle(angle - 359);
+	} else if(angle < 0) {
+		return ClampAngle(359 - angle);
+	} else {
+		return angle;
+	}
 }

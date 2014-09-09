@@ -18,4 +18,19 @@ namespace Navigation
 	 * @return             		The heading the boat should follow.
 	 */
 	int GetDesiredHeading(GPSPosition curr_pos, GPSPosition destination);
+
+	/**
+	 * Returns the distance between two GPSPositions.
+	 */
+	double GetDistance(GPSPosition pos_0, GPSPosition pos_1);
+
+	/**
+	 * Returns the heading difference between 0-359 degrees.
+	 */
+	int GetHeadingDiff(int heading0, int heading1);
+
+	/**
+	 * Clamps a angle in the 0-359 range.
+	 */
+	int ClampAngle(int angle);
 }

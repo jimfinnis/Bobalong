@@ -8,6 +8,7 @@
  */
 
 #include "wind_sensor.h"
+#include "Arduino.h"
 #include "pin_defs.h"
 #include <SoftwareSerial.h>
 

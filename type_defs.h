@@ -10,6 +10,7 @@
 #define TYPES_H
 
 typedef unsigned int uint;
+typedef unsigned char byte;
 
 struct BearingData {
 	int heading;
